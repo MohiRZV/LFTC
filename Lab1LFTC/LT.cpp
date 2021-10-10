@@ -1,23 +1,26 @@
 /*
 LT - Lexicografic Table
-an array of strings that stores its elements in lexicografic order
+an array of TS objects that stores its elements in lexicografic order
 */
 #pragma once
 #include <string>
+#include "TS.cpp"
 
 class LT {
 	//the maximum capacity
 	int capacity;
 	//the actual size
 	int size;
+	//the current code - generated incrementally
+	int code = 0;
 
 	//the array
-	std::string* table;
+	TS** table;
 
 	//doubles the capacity of the table
 	void resize() {
 		int newCap = capacity * 2;
-		std::string* tmp = new std::string[newCap];
+		TS** tmp = new TS*[newCap];
 		for (int i = 0; i < size; i++) {
 			tmp[i] = table[i];
 		}
@@ -28,7 +31,7 @@ class LT {
 
 	void init(int cap) {
 		capacity = cap;
-		table = new std::string[cap];
+		table = new TS*[cap];
 	}
 
 public:
@@ -44,12 +47,16 @@ public:
 		init(7);
 	}
 
-	//adds the given element in the table
-	void add(std::string element) {
+	/*
+		adds the given element in the table
+		returns the codeTS of the element that was inserted
+	*/
+	int add(std::string element) {
 		//insertion sort lexicografic - TODO
 		if (size >= 0.75 * capacity)
 			resize();
-		table[size++] = element;
+		table[size++] = new TS(element, code++);
+		return size;
 	}
 
 	//returns the actual size of the table
@@ -58,7 +65,7 @@ public:
 	}
 
 	//returns the entry on position @index from the table
-	std::string get(int index) {
+	TS* get(int index) {
 		return table[index];
 	}
 
@@ -66,7 +73,11 @@ public:
 	//or -1 if it is not in the table
 	int find(std::string element) {
 		//binary search - TODO
-		return 0;
+		for (int i = 0; i < size; i++) {
+			if (table[i]->getSymbol()._Equal(element))
+				return i;
+		}
+		return -1;
 	}
 
 	/*
@@ -74,7 +85,7 @@ public:
 		THIS REFERENCE SHOULD NOT BE STORED
 		AND MUST BE USED ONLY FOR READ OPERATIONS
 	*/
-	std::string* getLTasVector() {
+	TS** getLTasVector() {
 		return table;
 	}
 

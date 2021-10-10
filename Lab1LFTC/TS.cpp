@@ -15,5 +15,10 @@ public:
 	std::string toString() {
 		std::string s = "";
 		s.append("symbol= ").append(symbol).append(" , code= ").append(std::to_string(code));
+		return s;
+	}
+
+	std::string getSymbol() {
+		return symbol;
 	}
 };

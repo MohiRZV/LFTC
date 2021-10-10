@@ -7,9 +7,11 @@
 #include <vector>
 #include <fstream>
 #include <regex>
+#include "FIP.cpp"
+#include "LT.cpp"
 
-//method to create the FIP table as a map
-std::map<std::string, int> getFIPTable() {
+//method to create the available atoms table as a map
+std::map<std::string, int> getAtomsTable() {
     std::map<std::string, int> fip;
 
     fip.insert({ "ID",      0 });
@@ -83,10 +85,33 @@ std::vector<std::string> readFromFile(std::string file) {
 }
 
 void breakDown() {
-    std::map<std::string, int> fip = getFIPTable();
+    std::map<std::string, int> atoms = getAtomsTable();
+    std::vector<FIP*> fip;
+    LT* ts = new LT();
     std::vector<std::string> elements = readFromFile("source.txt");
     for (auto i : elements) {
-        std::cout << i << '\n';
+        std::map<std::string, int>::iterator it = atoms.find(i);
+        bool isNotSymbolOrConstant = (it != atoms.end());
+        //if the element is not a symbol or constant, it has no TS code
+        //== it is a keyword or separator
+        if (isNotSymbolOrConstant) {
+            fip.push_back(new FIP(it->second));
+        }
+        else {
+            //if the current symbol/constant is not already added to the TS
+            if (ts->find(i) == -1) {
+                int codeTS = ts->add(i);
+                //add the codeTS to correspoding FIP entry
+            }
+        }
+    }
+    std::cout << "FIP\n";
+    for (auto i : fip) {
+        std::cout << i->toString() << '\n';
+    }
+    std::cout << "TS\n";
+    for (int i = 0; i < ts->getSize();i++) {
+        std::cout << ts->get(i)->toString() << '\n';
     }
 }
 
