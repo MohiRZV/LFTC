@@ -4,7 +4,7 @@ birth {
 
     perimeter : double ;
     area : double ;
-    PI : double;
+    PI : double ;
     PI = 3.14 ;
     perimeter = 2 * PI * radius ;
     area = PI * radius * radius ;

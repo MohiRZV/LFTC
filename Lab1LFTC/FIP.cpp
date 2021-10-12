@@ -4,16 +4,24 @@
 #include <string>
 
 class FIP {
+	
 	int codeAtom;
 	int codeTS;
 
 public:
-	FIP(int codeAtom, int codeTS = -1) : codeAtom{ codeAtom }, codeTS{ codeTS }{
+	std::string atom;
 
+	FIP(std::string atom, int codeAtom, int codeTS = -1) : atom{ atom }, codeAtom { codeAtom }, codeTS{ codeTS }{
+
+	}
+
+	bool operator==(FIP& other) const {
+		return atom==other.atom && codeAtom==other.codeAtom && codeTS==other.codeTS;
 	}
 
 	std::string toString() {
 		std::string s = "";
+		s.append("atom= ").append(atom).append(" ");
 		s.append("codeAtom= ").append(std::to_string(codeAtom)).append(" , codeTS= ").append(std::to_string(codeTS));
 		return s;
 	}

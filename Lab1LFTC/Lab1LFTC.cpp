@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <regex>
+#include <algorithm> 
 #include "FIP.cpp"
 #include "LT.cpp"
 
@@ -84,6 +85,114 @@ std::vector<std::string> readFromFile(std::string file) {
     return elements;
 }
 
+std::string readSourceAsString(std::string file) {
+    std::string source;
+    std::ifstream fin(file);
+    std::string line;
+    while (std::getline(fin, line)) {
+        //remove spaces and tabs
+        line.erase(std::remove(line.begin(), line.end(), '\t'), line.end());
+        line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+        source.append(line);
+    }
+    //std::cout << source;
+    return source;
+}
+
+int checkIsAtom(std::string atomWannabe, std::map<std::string, int> atoms) {
+    std::map<std::string, int>::iterator it = atoms.find(atomWannabe);
+    if (it != atoms.end()) {
+        return it->second;
+    }
+    return -1;
+}
+
+bool isSeparator(std::string s, std::map<std::string, int> atoms) {
+    std::map<std::string, int>::iterator it = atoms.find(s);
+    if (it != atoms.end()) {
+        return true;
+    }
+    return false;
+}
+
+void breakDownCharByChar() {
+    std::map<std::string, int> atoms = getAtomsTable();
+    std::vector<FIP*> fip;
+    LT* ts = new LT();
+    std::string source = readSourceAsString("source.txt");
+    std::string currentAtom;
+    for (size_t i = 0; i < source.size(); i++)
+    {
+        //if it is a separator
+        if (isSeparator(std::string(1, source[i]), atoms)) {
+            //if an atom is found before the separator
+            int code = checkIsAtom(currentAtom, atoms);
+            if (code != -1) {
+                //add it to the fip
+                fip.push_back(new FIP(currentAtom, code));
+                currentAtom.clear();
+            }
+            else {
+                //if it is not in the available atoms list
+                //the atom built so far might be a variable
+                //if it is a valid variable name
+                if (currentAtom.size() <= 10) {
+                    //add it to the TS
+                    if (ts->find(currentAtom) != -1) {
+                        std::cout << "add variable to TS: " << currentAtom << "\n";
+                        ts->add(currentAtom);
+                    }
+                    currentAtom.clear();
+                }
+                else {
+                    //throw exception
+                    std::cout << "exception found strange " << source[i] << " after " << currentAtom << "\n";
+                    return;
+                }
+            }
+            if (ts->find(std::string(1, source[i])) != -1) {
+                std::cout << "add separator to TS: " << source[i] << "\n";
+                ts->add(std::string(1, source[i]));
+            }
+        }
+
+        currentAtom.push_back(source[i]);
+        int code = checkIsAtom(currentAtom, atoms);
+        //if an atom is found
+        if (code != -1) {
+            //add it to the fip
+            fip.push_back(new FIP(currentAtom, code));
+            currentAtom.clear();
+        }
+
+    }
+    //for (auto i : elements) {
+    //    std::map<std::string, int>::iterator it = atoms.find(i);
+    //    bool isNotSymbolOrConstant = (it != atoms.end());
+    //    //if the element is not a symbol or constant, it has no TS code
+    //    //== it is a keyword or separator
+    //    if (isNotSymbolOrConstant) {
+    //        fip.push_back(new FIP(it->second));
+    //    }
+    //    else {
+    //        //if the current symbol/constant is not already added to the TS
+    //        if (ts->find(i) == -1) {
+    //            int codeTS = ts->add(i);
+    //            //add the codeTS to correspoding FIP entry
+    //        }
+    //    }
+    //}
+   /* std::cout << "FIP\n";
+    for (auto i : fip) {
+        std::cout << i->toString() << '\n';
+    }*/
+    std::cout << "TS\n" << "size: " << ts->getSize() << '\n';
+    for (int i = 0; i < ts->getSize(); i++) {
+        std::cout << ts->get(i)->toString() << '\n';
+    }
+}
+
 void breakDown() {
     std::map<std::string, int> atoms = getAtomsTable();
     std::vector<FIP*> fip;
@@ -95,27 +204,36 @@ void breakDown() {
         //if the element is not a symbol or constant, it has no TS code
         //== it is a keyword or separator
         if (isNotSymbolOrConstant) {
-            fip.push_back(new FIP(it->second));
+            fip.push_back(new FIP(it->first, it->second));
         }
         else {
             //if the current symbol/constant is not already added to the TS
-            if (ts->find(i) == -1) {
+            int code = ts->find(i);
+            if (code == -1) {
                 int codeTS = ts->add(i);
                 //add the codeTS to correspoding FIP entry
+                //TODO differentiate between ID and CONST
+                fip.push_back(new FIP(i, 0, codeTS));
             }
+          
         }
     }
-    std::cout << "FIP\n";
+  /*  std::cout << "FIP\n";
     for (auto i : fip) {
         std::cout << i->toString() << '\n';
     }
     std::cout << "TS\n";
     for (int i = 0; i < ts->getSize();i++) {
         std::cout << ts->get(i)->toString() << '\n';
+    }*/
+    std::cout << "Atoms:\n";
+    for (auto i : fip) {
+        std::cout << i->atom << '\n';
     }
 }
 
 int main()
 {
+    //breakDownCharByChar();
     breakDown();
 }
