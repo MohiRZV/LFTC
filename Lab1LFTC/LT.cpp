@@ -52,10 +52,22 @@ public:
 		returns the codeTS of the element that was inserted
 	*/
 	int add(std::string element) {
-		//insertion sort lexicografic - TODO
 		if (size >= 0.75 * capacity)
 			resize();
+		//insertion sort lexicografic
+		//add element on the last position
 		table[size++] = new TS(element, code++);
+
+		int pos = size - 1;
+		//as long as the inserted element is smaller lexicographically then the current one
+		while (pos > 0 && table[pos]->getSymbol().compare(table[pos - 1]->getSymbol()) < 0) {
+			//interchange them
+			TS* tmp = table[pos];
+			table[pos] = table[pos - 1];
+			table[pos - 1] = tmp;
+			pos--;
+		}
+
 		return size;
 	}
 
@@ -72,10 +84,16 @@ public:
 	//returns  the position the desired element is found on
 	//or -1 if it is not in the table
 	int find(std::string element) {
-		//binary search - TODO
-		for (int i = 0; i < size; i++) {
-			if (table[i]->getSymbol()._Equal(element))
-				return i;
+		//binary search
+		int right = size - 1, left = 0;
+		while (left <= right) {
+			int middle = (left + right) / 2;
+			if (table[middle]->getSymbol()._Equal(element))
+				return middle;
+			if (table[middle]->getSymbol().compare(element) < 0)
+				left = middle + 1;
+			else
+				right = middle - 1;
 		}
 		return -1;
 	}

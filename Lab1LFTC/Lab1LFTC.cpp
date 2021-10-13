@@ -232,6 +232,6 @@ void breakDown() {
 
 int main()
 {
-    breakDownCharByChar();
-    //breakDown();
+    //breakDownCharByChar();
+    breakDown();
 }
