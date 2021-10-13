@@ -193,6 +193,12 @@ void breakDownCharByChar() {
     }
 }
 
+bool isNumeric(std::string atom) {
+    if (std::regex_match(atom , std::regex("[[:digit:]]*\.?[[:digit:]]+")))
+        return true;
+    return false;
+}
+
 void breakDown() {
     std::map<std::string, int> atoms = getAtomsTable();
     std::vector<FIP*> fip;
@@ -213,23 +219,26 @@ void breakDown() {
                 int codeTS = ts->add(i);
                 //add the codeTS to correspoding FIP entry
                 //TODO differentiate between ID and CONST
-                fip.push_back(new FIP(i, 0, codeTS));
+                if(isNumeric(i))
+                    fip.push_back(new FIP(i, 1, codeTS));
+                else
+                    fip.push_back(new FIP(i, 0, codeTS));
             }
           
         }
     }
-  /*  std::cout << "FIP\n";
+    std::cout << "FIP\n";
     for (auto i : fip) {
         std::cout << i->toString() << '\n';
     }
     std::cout << "TS\n";
     for (int i = 0; i < ts->getSize();i++) {
         std::cout << ts->get(i)->toString() << '\n';
-    }*/
-    std::cout << "Atoms:\n";
+    }
+    /*std::cout << "Atoms:\n";
     for (auto i : fip) {
         std::cout << i->atom << '\n';
-    }
+    }*/
 }
 
 int main()
