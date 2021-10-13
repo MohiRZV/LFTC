@@ -36,6 +36,7 @@ std::map<std::string, int> getAtomsTable() {
     fip.insert({ "<",   18 });
     fip.insert({ ">",   19 });
     fip.insert({ "!=",  20 });
+    fip.insert({ "!",  31 });
     fip.insert({ "<=",  21 });
     fip.insert({ "=",   22 });
     fip.insert({ "birth",       23 });
@@ -116,87 +117,76 @@ bool isSeparator(std::string s, std::map<std::string, int> atoms) {
     return false;
 }
 
+
+bool isNumeric(std::string atom) {
+    if (std::regex_match(atom, std::regex("[[:digit:]]*\.?[[:digit:]]+")))
+        return true;
+    return false;
+}
+
 void breakDownCharByChar() {
     std::map<std::string, int> atoms = getAtomsTable();
     std::vector<FIP*> fip;
     LT* ts = new LT();
     std::string source = readSourceAsString("source.txt");
     std::string currentAtom;
-    for (size_t i = 0; i < source.size(); i++)
+    int i = 0;
+    while(i<source.size())
     {
-        //if it is a separator
-        if (isSeparator(std::string(1, source[i]), atoms)) {
-            //if an atom is found before the separator
-            int code = checkIsAtom(currentAtom, atoms);
-            if (code != -1) {
-                //add it to the fip
-                fip.push_back(new FIP(currentAtom, code));
-                currentAtom.clear();
-            }
-            else {
-                //if it is not in the available atoms list
-                //the atom built so far might be a variable
-                //if it is a valid variable name
-                if (currentAtom.size() <= 10) {
-                    //add it to the TS
-                    if (ts->find(currentAtom) != -1) {
-                        std::cout << "add variable to TS: " << currentAtom << "\n";
-                        ts->add(currentAtom);
-                    }
-                    currentAtom.clear();
-                }
-                else {
-                    //throw exception
-                    std::cout << "exception found strange " << source[i] << " after " << currentAtom << "\n";
-                    return;
-                }
-            }
-            if (ts->find(std::string(1, source[i])) != -1) {
-                std::cout << "add separator to TS: " << source[i] << "\n";
-                ts->add(std::string(1, source[i]));
-            }
-        }
-
-        currentAtom.push_back(source[i]);
+        bool isIDorCONST = true;
+        //if the atom built so far is in the atoms list
         int code = checkIsAtom(currentAtom, atoms);
-        //if an atom is found
         if (code != -1) {
             //add it to the fip
             fip.push_back(new FIP(currentAtom, code));
-            currentAtom.clear();
+            isIDorCONST = false;
         }
 
+        //this deals with the current character [and the next one]
+        //if the atom built so far is an operator
+        //check if it is part of a composite operator
+        std::string current;
+        current.push_back(source[i]);
+        //if the current char is an operator, check if it is part of a composite operator
+        if (isSeparator(current, atoms)) {
+            std::string composite;
+            composite.push_back(source[i]);
+            composite.push_back(source[i + 1]);
+            if (isSeparator(composite, atoms)) {
+                current.assign(composite);
+                i++;
+            }
+            
+            if (isIDorCONST) {
+                //if control reached here, currentAtom is an ID or a CONST
+                code = ts->find(currentAtom);
+                if (code == -1) {
+                    int codeTS = ts->add(currentAtom);
+                    //add the codeTS to correspoding FIP entry4
+                    if (isNumeric(currentAtom))
+                        fip.push_back(new FIP(currentAtom, 1, codeTS));
+                    else  //TODO check if it is a valid variable name, or throw exception
+                        fip.push_back(new FIP(currentAtom, 0, codeTS));
+                    currentAtom.clear();
+                }
+            }
+            fip.push_back(new FIP(current, checkIsAtom(current, atoms)));
+            currentAtom.clear();
+            i++;
+        }
+
+        currentAtom.push_back(source[i]);
+        i++;
     }
-    //for (auto i : elements) {
-    //    std::map<std::string, int>::iterator it = atoms.find(i);
-    //    bool isNotSymbolOrConstant = (it != atoms.end());
-    //    //if the element is not a symbol or constant, it has no TS code
-    //    //== it is a keyword or separator
-    //    if (isNotSymbolOrConstant) {
-    //        fip.push_back(new FIP(it->second));
-    //    }
-    //    else {
-    //        //if the current symbol/constant is not already added to the TS
-    //        if (ts->find(i) == -1) {
-    //            int codeTS = ts->add(i);
-    //            //add the codeTS to correspoding FIP entry
-    //        }
-    //    }
-    //}
-   /* std::cout << "FIP\n";
+    
+    std::cout << "FIP\n";
     for (auto i : fip) {
         std::cout << i->toString() << '\n';
-    }*/
+    }
     std::cout << "TS\n" << "size: " << ts->getSize() << '\n';
     for (int i = 0; i < ts->getSize(); i++) {
         std::cout << ts->get(i)->toString() << '\n';
     }
-}
-
-bool isNumeric(std::string atom) {
-    if (std::regex_match(atom , std::regex("[[:digit:]]*\.?[[:digit:]]+")))
-        return true;
-    return false;
 }
 
 void breakDown() {
@@ -218,7 +208,6 @@ void breakDown() {
             if (code == -1) {
                 int codeTS = ts->add(i);
                 //add the codeTS to correspoding FIP entry
-                //TODO differentiate between ID and CONST
                 if(isNumeric(i))
                     fip.push_back(new FIP(i, 1, codeTS));
                 else
@@ -243,6 +232,6 @@ void breakDown() {
 
 int main()
 {
-    //breakDownCharByChar();
-    breakDown();
+    breakDownCharByChar();
+    //breakDown();
 }
