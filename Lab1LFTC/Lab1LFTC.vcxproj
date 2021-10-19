@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CharByChar.cpp" />
     <ClCompile Include="FIP.cpp" />
     <ClCompile Include="Lab1LFTC.cpp" />
     <ClCompile Include="LT.cpp" />

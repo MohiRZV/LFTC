@@ -19,6 +19,10 @@ public:
 		return atom==other.atom && codeAtom==other.codeAtom && codeTS==other.codeTS;
 	}
 
+	void setCodeTS(int code) {
+		codeTS = code;
+	}
+
 	std::string toString() {
 		std::string s = "";
 		s.append("atom= ").append(atom).append(" ");

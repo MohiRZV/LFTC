@@ -17,7 +17,7 @@ std::map<std::string, int> getAtomsTable() {
 
     fip.insert({ "ID",      0 });
     fip.insert({ "CONST",   1 });
-    fip.insert({ "integer", 2 });
+    fip.insert({ "int", 2 });
     fip.insert({ "double",  3 });
     fip.insert({ "circle",  4 });
     fip.insert({ ":", 5 });
@@ -26,27 +26,27 @@ std::map<std::string, int> getAtomsTable() {
     fip.insert({ "{", 8 });
     fip.insert({ "}", 9 });
     fip.insert({ "(", 10 });
-    fip.insert({ "->",  11 });
-    fip.insert({ "<-",  12 });
-    fip.insert({ "+",   13 });
-    fip.insert({ "-",   14 });
-    fip.insert({ "*",   15 });
-    fip.insert({ "++",  16 });
-    fip.insert({ "--",  17 });
-    fip.insert({ "<",   18 });
-    fip.insert({ ">",   19 });
-    fip.insert({ "!=",  20 });
-    fip.insert({ "!",  31 });
-    fip.insert({ "<=",  21 });
-    fip.insert({ "=",   22 });
-    fip.insert({ "birth",       23 });
-    fip.insert({ "die.",        24 });
-    fip.insert({ "supposing",   25 });
-    fip.insert({ "thereupon",   26 });
-    fip.insert({ "gather",      27 });
-    fip.insert({ "dash",        28 });
-    fip.insert({ "purge",       29 });
-    fip.insert({ "given",       30 });
+    fip.insert({ ")", 11 });
+    fip.insert({ ">>",  12 });
+    fip.insert({ "<<",  13 });
+    fip.insert({ "+",   14 });
+    fip.insert({ "-",   15 });
+    fip.insert({ "*",   16 });
+    fip.insert({ "++",  17 });
+    fip.insert({ "--",  18 });
+    fip.insert({ "<",   19 });
+    fip.insert({ ">",   20 });
+    fip.insert({ "!=",  21 });
+    fip.insert({ "!",   22 });
+    fip.insert({ "<=",  23 });
+    fip.insert({ "=",   24 });
+    fip.insert({ "main",    25 });
+    fip.insert({ "return",  26 });
+    fip.insert({ "if",      27 });
+    fip.insert({ "while",   28 });
+    fip.insert({ "cin",     29 });
+    fip.insert({ "cout",    30 });
+    fip.insert({ "for",     31 });
 
     return fip;
 }
@@ -91,13 +91,9 @@ std::string readSourceAsString(std::string file) {
     std::ifstream fin(file);
     std::string line;
     while (std::getline(fin, line)) {
-        //remove spaces and tabs
-        line.erase(std::remove(line.begin(), line.end(), '\t'), line.end());
-        line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
         source.append(line);
     }
-    //std::cout << source;
     return source;
 }
 
@@ -107,6 +103,13 @@ int checkIsAtom(std::string atomWannabe, std::map<std::string, int> atoms) {
         return it->second;
     }
     return -1;
+}
+
+bool isSpace(std::string s) {
+    if (s.compare(" ") == 0 || s.compare("\t") == 0 || s.empty()) {
+        return true;
+    }
+    return false;
 }
 
 bool isSeparator(std::string s, std::map<std::string, int> atoms) {
@@ -124,73 +127,17 @@ bool isNumeric(std::string atom) {
     return false;
 }
 
-void breakDownCharByChar() {
-    std::map<std::string, int> atoms = getAtomsTable();
-    std::vector<FIP*> fip;
-    LT* ts = new LT();
-    std::string source = readSourceAsString("source.txt");
-    std::string currentAtom;
-    int i = 0;
-    while(i<source.size())
-    {
-        bool isIDorCONST = true;
-        //if the atom built so far is in the atoms list
-        int code = checkIsAtom(currentAtom, atoms);
-        if (code != -1) {
-            //add it to the fip
-            fip.push_back(new FIP(currentAtom, code));
-            isIDorCONST = false;
-        }
-
-        //this deals with the current character [and the next one]
-        //if the atom built so far is an operator
-        //check if it is part of a composite operator
-        std::string current;
-        current.push_back(source[i]);
-        //if the current char is an operator, check if it is part of a composite operator
-        if (isSeparator(current, atoms)) {
-            std::string composite;
-            composite.push_back(source[i]);
-            composite.push_back(source[i + 1]);
-            if (isSeparator(composite, atoms)) {
-                current.assign(composite);
-                i++;
-            }
-            
-            if (isIDorCONST) {
-                //if control reached here, currentAtom is an ID or a CONST
-                code = ts->find(currentAtom);
-                if (code == -1) {
-                    int codeTS = ts->add(currentAtom);
-                    //add the codeTS to correspoding FIP entry4
-                    if (isNumeric(currentAtom))
-                        fip.push_back(new FIP(currentAtom, 1, codeTS));
-                    else  //TODO check if it is a valid variable name, or throw exception
-                        fip.push_back(new FIP(currentAtom, 0, codeTS));
-                    currentAtom.clear();
-                }
-            }
-            fip.push_back(new FIP(current, checkIsAtom(current, atoms)));
-            currentAtom.clear();
-            i++;
-        }
-
-        currentAtom.push_back(source[i]);
-        i++;
-    }
-    
-    std::cout << "FIP\n";
-    for (auto i : fip) {
-        std::cout << i->toString() << '\n';
-    }
-    std::cout << "TS\n" << "size: " << ts->getSize() << '\n';
-    for (int i = 0; i < ts->getSize(); i++) {
-        std::cout << ts->get(i)->toString() << '\n';
-    }
+bool isVariableNameCorrect(std::string name) {
+    if (std::regex_match(name, std::regex("[a-zA-Z][[:digit:]]*[a-zA-Z]*")) && name.length() <= 8)
+        return true;
+    return false;
 }
+
+
 
 void breakDown() {
     std::map<std::string, int> atoms = getAtomsTable();
+    std::string errors;
     std::vector<FIP*> fip;
     LT* ts = new LT();
     std::vector<std::string> elements = readFromFile("source.txt");
@@ -204,30 +151,55 @@ void breakDown() {
         }
         else {
             //if the current symbol/constant is not already added to the TS
-            int code = ts->find(i);
-            if (code == -1) {
-                int codeTS = ts->add(i);
-                //add the codeTS to correspoding FIP entry
-                if(isNumeric(i))
-                    fip.push_back(new FIP(i, 1, codeTS));
-                else
+            
+            //add the codeTS to correspoding FIP entry
+            if (isNumeric(i)) {//is float/double
+                int code = ts->find(i);
+                int codeTS = -1;
+                if (code == -1) {
+                    codeTS = ts->add(i);
+                }
+                fip.push_back(new FIP(i, 1, codeTS));
+            }
+            else {//is variable name
+                if (isVariableNameCorrect(i)) {
+                    int code = ts->find(i);
+                    int codeTS = -1;
+                    if (code == -1) {
+                        codeTS = ts->add(i);
+                    }
                     fip.push_back(new FIP(i, 0, codeTS));
+                }
+                else {
+                    std::string err;
+                    err.append("Variable ").append(i).append(" contains illegal characters or is too long!\n");
+                    errors.append(err);
+                }
             }
           
         }
     }
-    std::cout << "FIP\n";
-    for (auto i : fip) {
-        std::cout << i->toString() << '\n';
+
+    if (errors.empty()) {
+        std::cout << "FIP\n";
+        for (auto i : fip) {
+            //update the TS code for each FIP entry (when an item is added to the TS, the codes change so they are consistent with the position)
+            i->setCodeTS(ts->find(i->atom));
+            std::cout << i->toString() << '\n';
+        }
+        std::cout << "TS\n";
+        for (int i = 0; i < ts->getSize(); i++) {
+            std::cout << ts->get(i)->toString() << '\n';
+        }
+        /*std::cout << "Atoms:\n";
+        for (auto i : fip) {
+            std::cout << i->atom << '\n';
+        }*/
     }
-    std::cout << "TS\n";
-    for (int i = 0; i < ts->getSize();i++) {
-        std::cout << ts->get(i)->toString() << '\n';
+    else {
+        std::cout << "Compilation FAILED! There were syntax errors:\n";
+        std::cout << errors;
     }
-    /*std::cout << "Atoms:\n";
-    for (auto i : fip) {
-        std::cout << i->atom << '\n';
-    }*/
 }
 
 int main()

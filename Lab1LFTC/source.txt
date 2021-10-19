@@ -1,15 +1,13 @@
-birth {
-    radius : double ;
-    gather -> radius ;
-
-    perimeter : double ;
-    area : double ;
-    PI : double ;
+int main ( ) {
+    double radius ;
+    cin >> radius ;
+    double perim ;
+    double area ;
+    double PI ;
     PI = 3.14 ;
-    perimeter = 2 * PI * radius ;
+    perim = 2 * PI * radius ;
     area = PI * radius * radius ;
-
-    dash <- perimeter ;
-    dash <- area ;
-    die.
-}
+    cout << perim ;
+    cout << area ;
+    return 0 ; 
+} 

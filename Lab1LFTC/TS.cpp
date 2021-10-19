@@ -18,6 +18,10 @@ public:
 		return s;
 	}
 
+	void setCode(int code) {
+		this->code = code;
+	}
+
 	std::string getSymbol() {
 		return symbol;
 	}

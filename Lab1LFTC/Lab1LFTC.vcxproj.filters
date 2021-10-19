@@ -27,6 +27,9 @@
     <ClCompile Include="FIP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CharByChar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="source.txt" />

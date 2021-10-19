@@ -65,10 +65,12 @@ public:
 			TS* tmp = table[pos];
 			table[pos] = table[pos - 1];
 			table[pos - 1] = tmp;
+			table[pos]->setCode(pos);
+			table[pos - 1]->setCode(pos - 1);
 			pos--;
 		}
 
-		return size;
+		return pos + 1;
 	}
 
 	//returns the actual size of the table
