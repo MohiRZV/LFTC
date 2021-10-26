@@ -1,0 +1,6 @@
+﻿  Lab2LFTC.cpp
+C:\Users\razva\source\repos\Lab2LFTC\Lab2LFTC\Lab2LFTC.cpp(46,9): warning C4018: '<': signed/unsigned mismatch
+C:\Users\razva\source\repos\Lab2LFTC\Lab2LFTC\Lab2LFTC.cpp(57,8): warning C4018: '<': signed/unsigned mismatch
+C:\Users\razva\source\repos\Lab2LFTC\Lab2LFTC\Lab2LFTC.cpp(194,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\razva\source\repos\Lab2LFTC\Lab2LFTC\Lab2LFTC.cpp(216,21): warning C4018: '<': signed/unsigned mismatch
+  Lab2LFTC.vcxproj -> C:\Users\razva\source\repos\Lab2LFTC\Debug\Lab2LFTC.exe

@@ -1,0 +1,4 @@
+Init q0 : q1 , a - q3 , b ;
+Inter q2 : q0 , b - q1 , a ;
+Inter q3 : q1 , b - q2 , a ;
+Fin q1 : q2 , a ;
