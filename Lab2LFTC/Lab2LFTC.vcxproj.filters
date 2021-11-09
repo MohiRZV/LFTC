@@ -18,11 +18,27 @@
     <ClCompile Include="Lab2LFTC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FIP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FSM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="af_description.txt" />
-    <Text Include="integer_literal_fsm_description.txt">
-      <Filter>Source Files</Filter>
-    </Text>
+    <Text Include="integer_literal_fsm_description.txt" />
+    <Text Include="activitate.txt" />
+    <Text Include="identifiers.txt" />
+    <Text Include="source.txt" />
+    <Text Include="operators.txt" />
+    <Text Include="literal_fsm_description.txt" />
+    <Text Include="atom_fsm_description.txt" />
   </ItemGroup>
 </Project>

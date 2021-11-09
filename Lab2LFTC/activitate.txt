@@ -1,0 +1,5 @@
+Init q0 : q1 , a ;
+Inter q1 : q2 , a ;
+Inter q2 : q2 , a ~ q3 , b ;
+Inter q3 : q4 , b ;
+Fin q4 : q4 , b ;

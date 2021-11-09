@@ -1,0 +1,15 @@
+Init q0 : q1 , + ~ q3 , - ~ q6 , * ~ q7 , = ~ q8 , > ~ q9 , < ~ q12 , { ~ q13 , } ~ q14 , ( ~ q15 , ) ;
+Fin q1 : q2 , + ;
+Fin q2 : ;
+Fin q3 : q4 , - ;
+Fin q4 : ;
+Fin q6 : ;
+Fin q7 : ;
+Inter q8 : q10 , > ;
+Fin q10 : ;
+Inter q9 : q11 , < ;
+Fin q11 : ;
+Fin q12 : ;
+Fin q13 : ;
+Fin q14 : ;
+Fin q15 : ;
